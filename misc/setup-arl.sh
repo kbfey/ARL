@@ -1,3 +1,4 @@
+set -e
 
 echo "cd /opt/"
 
@@ -18,8 +19,8 @@ yum install epel-release -y
 yum install python36 mongodb-org-server mongodb-org-shell rabbitmq-server python36-devel gcc-c++ git \
  nginx  fontconfig wqy-microhei-fonts -y
 
-if [ ! -f /usr/bin/python36 ]; then
-  echo "link python36"
+if [ ! -f /usr/bin/python3.6 ]; then
+  echo "link python3.6"
   ln -s /usr/bin/python36 /usr/bin/python3.6
 fi
 
@@ -132,6 +133,12 @@ if [ ! -f /etc/systemd/system/arl-worker.service ]; then
   cp misc/arl-worker.service /etc/systemd/system/
 fi
 
+
+if [ ! -f /etc/systemd/system/arl-worker-github.service ]; then
+  echo  "copy arl-worker-github.service"
+  cp misc/arl-worker-github.service /etc/systemd/system/
+fi
+
 if [ ! -f /etc/systemd/system/arl-scheduler.service ]; then
   echo  "copy arl-scheduler.service"
   cp misc/arl-scheduler.service /etc/systemd/system/
@@ -142,6 +149,8 @@ systemctl enable arl-web
 systemctl start arl-web
 systemctl enable arl-worker
 systemctl start arl-worker
+systemctl enable arl-worker-github
+systemctl start arl-worker-github
 systemctl enable arl-scheduler
 systemctl start arl-scheduler
 systemctl enable nginx
@@ -149,6 +158,7 @@ systemctl start nginx
 
 systemctl status arl-web
 systemctl status arl-worker
+systemctl status arl-worker-github
 systemctl status arl-scheduler
 
 echo "install done"

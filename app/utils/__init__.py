@@ -24,6 +24,7 @@ from .arlupdate import arl_update
 from .cdn import get_cdn_name_by_cname, get_cdn_name_by_ip
 from .device import device_info
 from .cron import check_cron, check_cron_interval
+from .query_loader import load_query_plugins
 
 
 def load_file(path):
@@ -37,6 +38,7 @@ def exec_system(cmd, **kwargs):
 
     if kwargs.get('timeout'):
         timeout = kwargs['timeout']
+        kwargs.pop('timeout')
 
     completed = subprocess.run(shlex.split(cmd), timeout=timeout, check=False, close_fds=True, **kwargs)
 
@@ -96,7 +98,7 @@ def get_ip(domain, log_flag = True):
     logger = get_logger()
     ips = []
     try:
-        answers = dns.resolver.query(domain, 'A')
+        answers = dns.resolver.resolve(domain, 'A')
         for rdata in answers:
             if rdata.address == '0.0.0.1':
                 continue
@@ -116,7 +118,7 @@ def get_cname(domain, log_flag=True):
     logger = get_logger()
     cnames = []
     try:
-        answers = dns.resolver.query(domain, 'CNAME')
+        answers = dns.resolver.resolve(domain, 'CNAME')
         for rdata in answers:
             cnames.append(str(rdata.target).strip(".").lower())
     except dns.resolver.NoAnswer as e:
